@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generar QR</title>
+</head>
+<body>
+  <h1>Generar QR</h1>
+  <div>
+    <p>Escanea el código QR para verificar el token:</p>
+    <img id="qrCode" alt="QR Code" src="" />
+  </div>
+
+  <script>
+    async function fetchQRCode() {
+      try {
+        const response = await fetch('https://bakend-example-ecommerce.vercel.app/api/qr/generate');
+        if (!response.ok) throw new Error('Error al generar el QR');
+        const data = await response.json();
+        document.getElementById('qrCode').src = data.qrCode; // Imagen del QR devuelta por el backend
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Hubo un problema al generar el QR.');
+      }
+    }
+
+    fetchQRCode();
+  </script>
+</body>
+</html>
