@@ -12,6 +12,11 @@
             const event = urlParams.get('event');
             const sculptor = urlParams.get('sculptor');
 
+            if (!token || !event || !sculptor) {
+                document.getElementById('result').innerText = 'Faltan parámetros en la URL.';
+                return;
+            }
+
             try {
                 const response = await fetch(`http://localhost:3000/api/qr/validate?token=${token}&event=${event}&sculptor=${sculptor}`);
                 const data = await response.json();

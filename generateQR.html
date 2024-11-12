@@ -9,23 +9,17 @@
         let countdownIntervalId;
         let countdown = 60;
 
-        // Función para mostrar la información del evento y escultor seleccionados
-        function displaySelectedData() {
-            const event = document.getElementById('eventSelect').value;
-            const sculptor = document.getElementById('sculptorSelect').value;
-
-            document.getElementById('selectedData').innerHTML = `
-                <p>Vas a votar en el Evento ${event} para el Escultor ${sculptor}</p>
-                <button onclick="generateQRCode()">Generar QR</button>
-            `;
-        }
-
         // Función para obtener y mostrar el código QR
-        async function generateQRCode() {
+        async function fetchQRCode() {
             const event = document.getElementById('eventSelect').value;
             const sculptor = document.getElementById('sculptorSelect').value;
+
+            // Mostrar el evento y escultor seleccionados antes de generar el QR
+            document.getElementById('selectedEvent').innerText = `Evento: ${event}`;
+            document.getElementById('selectedSculptor').innerText = `Escultor: ${sculptor}`;
 
             try {
+                // Llamada a la API para generar el QR
                 const response = await fetch(`http://localhost:3000/api/qr/generate?event=${event}&sculptor=${sculptor}`);
                 const data = await response.json();
 
@@ -40,6 +34,7 @@
 
                 // Reinicia el contador a 60 segundos cada vez que se genera un nuevo QR
                 resetCountdown();
+
             } catch (error) {
                 console.error('Error al generar el QR:', error);
             }
@@ -47,9 +42,9 @@
 
         // Función para iniciar la generación automática de QR y el contador cada 60 segundos
         function startAutoRefresh() {
-            generateQRCode(); // Genera el QR inmediatamente
+            fetchQRCode(); // Genera el QR inmediatamente
             clearInterval(intervalId); // Limpia cualquier intervalo anterior
-            intervalId = setInterval(generateQRCode, 60000); // Actualiza cada 60 segundos
+            intervalId = setInterval(fetchQRCode, 60000); // Actualiza cada 60 segundos
         }
 
         // Función para reiniciar el contador a 60 segundos
@@ -72,7 +67,7 @@
     <h1>Generar Código QR</h1>
 
     <label for="eventSelect">Selecciona el evento:</label>
-    <select id="eventSelect" onchange="displaySelectedData()">
+    <select id="eventSelect">
         <option value="1">Evento 1</option>
         <option value="2">Evento 2</option>
         <option value="3">Evento 3</option>
@@ -80,15 +75,18 @@
     </select>
 
     <label for="sculptorSelect">Selecciona el escultor:</label>
-    <select id="sculptorSelect" onchange="displaySelectedData()">
+    <select id="sculptorSelect">
         <option value="1">Escultor 1</option>
         <option value="2">Escultor 2</option>
         <option value="3">Escultor 3</option>
         <!-- Agrega más escultores si es necesario -->
     </select>
 
-    <div id="selectedData"></div>
+    <button onclick="startAutoRefresh()">Generar QR</button>
 
+    <p id="selectedEvent"></p>
+    <p id="selectedSculptor"></p>
+    
     <div id="qrCodeContainer"></div>
     <p>QR se actualizará en: <span id="countdown">60</span> segundos</p>
 </body>
