@@ -9,22 +9,17 @@
         async function verifyToken() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
+            const event = urlParams.get('event');
+            const sculptor = urlParams.get('sculptor');
 
             try {
-                const response = await fetch(`https://bakend-example-ecommerce.vercel.app/api/qr/validate?token=${token}`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
+                const response = await fetch(`http://localhost:3000/api/qr/validate?token=${token}&event=${event}&sculptor=${sculptor}`);
                 const data = await response.json();
 
                 if (data.valid) {
-                    document.getElementById('result').innerText = 'El token es válido.';
+                    document.getElementById('result').innerText = `El token es válido para el evento ${event} y el escultor ${sculptor}.`;
                 } else {
-                    document.getElementById('result').innerText = 'El token es inválido o ha expirado.';
-                    // Desactiva el botón si el token es inválido
-                    document.getElementById('verifyButton').disabled = true;
+                    document.getElementById('result').innerText = 'El token es inválido o ha expirado para el evento y escultor seleccionados.';
                 }
             } catch (error) {
                 console.error('Error al verificar el token:', error);
@@ -39,6 +34,5 @@
 <body>
     <h1>Verificar Token</h1>
     <div id="result"></div>
-    <button id="verifyButton" onclick="verifyToken()">Verificar Token</button>
 </body>
 </html>
