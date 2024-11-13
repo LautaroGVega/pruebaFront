@@ -27,7 +27,7 @@
 
       try {
         // Realiza la solicitud al backend para verificar el token
-        const response = await fetch(`http://localhost:3000/api/${token}/${numeroevento}/${numeroescultor}`);
+        const response = await fetch(`http://localhost:3000/api/qr/${numeroevento}/${numeroescultor}/${token}`);
         
         if (!response.ok) throw new Error("Error en la verificación del token");
 
