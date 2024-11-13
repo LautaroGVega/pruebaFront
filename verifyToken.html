@@ -9,6 +9,9 @@
   <h1>Verificación de Token</h1>
   <div id="verificationMessage">Verificando...</div>
   
+  <!-- Botón que solo se habilita si el token es válido -->
+  <button id="actionButton" disabled>Acción Permitida</button>
+
   <script>
     // Extrae los parámetros de la URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -32,9 +35,15 @@
 
         // Muestra el mensaje y los detalles del evento y escultor
         document.getElementById('verificationMessage').textContent = `Token válido para el evento ${data.event} y el escultor ${data.sculptor}`;
+
+        // Habilita el botón de acción si el token es válido
+        document.getElementById('actionButton').disabled = false;
       } catch (error) {
         console.error(error);
         document.getElementById('verificationMessage').textContent = 'El token es inválido o ha expirado.';
+        
+        // Asegura que el botón permanezca deshabilitado si el token es inválido
+        document.getElementById('actionButton').disabled = true;
       }
     }
 
