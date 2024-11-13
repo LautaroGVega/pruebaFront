@@ -3,45 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verificación de Código QR</title>
+  <title>Verificación de Token</title>
 </head>
 <body>
-  <h1>Verificación de Código QR</h1>
+  <h1>Verificación de Token</h1>
+  <div id="verificationMessage">Verificando...</div>
   
-  <p id="verificationMessage">Verificando...</p>
-
   <script>
+    // Extrae los parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.pathname.split('/').slice(1).join('/'));
+    const token = urlParams.get('token');
+    const numeroevento = urlParams.get('numeroevento');
+    const numeroescultor = urlParams.get('numeroescultor');
+
     async function verifyToken() {
-      // Obtiene los parámetros de la URL (token, numeroevento y numeroescultor)
-      const urlParams = new URLSearchParams(window.location.pathname.split('/').slice(1).join('/'));
-
-      const token = urlParams.get('token');
-      const numeroevento = urlParams.get('numeroevento');
-      const numeroescultor = urlParams.get('numeroescultor');
-
-      // Verifica que los parámetros existan
       if (!token || !numeroevento || !numeroescultor) {
-        document.getElementById("verificationMessage").textContent = "Datos de verificación no encontrados en la URL.";
+        document.getElementById('verificationMessage').textContent = 'Datos no encontrados en la URL.';
         return;
       }
 
       try {
-        // Realiza la solicitud de verificación al backend
+        // Realiza la solicitud al backend para verificar el token
         const response = await fetch(`http://localhost:3000/${token}/${numeroevento}/${numeroescultor}`);
         
-        if (response.ok) {
-          const data = await response.json();
-          document.getElementById("verificationMessage").textContent = data.message;
-        } else {
-          document.getElementById("verificationMessage").textContent = "Código QR inválido o expirado.";
-        }
+        if (!response.ok) throw new Error("Error en la verificación del token");
+
+        const data = await response.json();
+
+        // Muestra el mensaje y los detalles del evento y escultor
+        document.getElementById('verificationMessage').textContent = `Token válido para el evento ${data.event} y el escultor ${data.sculptor}`;
       } catch (error) {
         console.error(error);
-        document.getElementById("verificationMessage").textContent = "Error al verificar el código QR.";
+        document.getElementById('verificationMessage').textContent = 'El token es inválido o ha expirado.';
       }
     }
 
-    // Llama a la función de verificación cuando se carga la página
+    // Llama a la función para verificar el token al cargar la página
     verifyToken();
   </script>
 </body>
