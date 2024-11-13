@@ -1,43 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Token</title>
-    <script>
-        // Función para verificar el token
-        async function verifyToken() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-            const event = urlParams.get('event');
-            const sculptor = urlParams.get('sculptor');
-
-            if (!token || !event || !sculptor) {
-                document.getElementById('result').innerText = 'Faltan parámetros en la URL.';
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://localhost:3000/api/qr/validate?token=${token}&event=${event}&sculptor=${sculptor}`);
-                const data = await response.json();
-
-                if (data.valid) {
-                    document.getElementById('result').innerText = `El token es válido para el evento ${event} y el escultor ${sculptor}.`;
-                } else {
-                    document.getElementById('result').innerText = 'El token es inválido o ha expirado para el evento y escultor seleccionados.';
-                }
-            } catch (error) {
-                console.error('Error al verificar el token:', error);
-                document.getElementById('result').innerText = 'Error al verificar el token.';
-            }
-        }
-
-        // Verificar el token al cargar la página
-        window.onload = verifyToken;
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificación de Código QR</title>
 </head>
 <body>
-    <h1>Verificar Token</h1>
-    <div id="result"></div>
+  <h1>Verificación de Código QR</h1>
+  
+  <p id="verificationMessage">Verificando...</p>
+
+  <script>
+    async function verifyToken() {
+      // Obtiene los parámetros de la URL (token, numeroevento y numeroescultor)
+      const urlParams = new URLSearchParams(window.location.pathname.split('/').slice(1).join('/'));
+
+      const token = urlParams.get('token');
+      const numeroevento = urlParams.get('numeroevento');
+      const numeroescultor = urlParams.get('numeroescultor');
+
+      // Verifica que los parámetros existan
+      if (!token || !numeroevento || !numeroescultor) {
+        document.getElementById("verificationMessage").textContent = "Datos de verificación no encontrados en la URL.";
+        return;
+      }
+
+      try {
+        // Realiza la solicitud de verificación al backend
+        const response = await fetch(`http://localhost:3000/${token}/${numeroevento}/${numeroescultor}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById("verificationMessage").textContent = data.message;
+        } else {
+          document.getElementById("verificationMessage").textContent = "Código QR inválido o expirado.";
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById("verificationMessage").textContent = "Error al verificar el código QR.";
+      }
+    }
+
+    // Llama a la función de verificación cuando se carga la página
+    verifyToken();
+  </script>
 </body>
 </html>
